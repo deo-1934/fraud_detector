@@ -242,3 +242,34 @@ def main():
 
 if __name__ == "__main__":
     main()
+# --- Wrappers for main.py compatibility ---
+def train(pipe, X, y):
+    """
+    Wrapper so main.py can call `train(...)`.
+    Adjust the inside to use your existing training code.
+    """
+    # اگر کد آموزش شما اسمش مثلاً train_model هست، از اون استفاده کن:
+    # return train_model(pipe, X, y)
+    pipe.fit(X, y)
+    return pipe
+
+def evaluate(pipe, X, y):
+    """
+    Wrapper so main.py can call `evaluate(...)`.
+    Must return: (report_dict, roc_auc, pr_auc, extra_dict)
+    """
+    from sklearn.metrics import classification_report, roc_auc_score, average_precision_score
+    import numpy as np
+
+    if hasattr(pipe, "predict_proba"):
+        y_scores = pipe.predict_proba(X)[:, 1]
+    else:
+        y_scores = pipe.decision_function(X)
+
+    roc = roc_auc_score(y, y_scores)
+    pr = average_precision_score(y, y_scores)
+    y_pred = (y_scores >= 0.5).astype(int)
+
+    rep = classification_report(y, y_pred, output_dict=True, zero_division=0)
+    extra = {"n_samples": len(y), "pos_rate": float(np.mean(y))}
+    return rep, float(roc), float(pr), extra
