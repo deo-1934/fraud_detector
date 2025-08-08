@@ -1,0 +1,19 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data & outputs
+data/raw/
+data/processed/
+models/
+reports/
+
+# OS junk
+.DS_Store
+Thumbs.db
